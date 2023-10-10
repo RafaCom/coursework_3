@@ -1,18 +1,18 @@
+import json
+
 from flask import Flask
 
-# from flask_restx import Api
+from flask_restx import Api
 
 from config import Config
 from dao.model.user import User
-# from project.dao.model.user import User
+from project.dao.model.director import Director
+from project.dao.model.genre import Genre
+from project.dao.model.movie import Movie
+from project.views.auth import auth_ns
+
+from project.views.movies import movie_ns
 from setup_db import db
-
-
-# from views.auth import auth_ns
-# from views.directors import director_ns
-# from views.genres import genre_ns
-# from views.movies import movie_ns
-# from views.users import user_ns
 
 
 def create_app(config_object):
@@ -25,23 +25,13 @@ def create_app(config_object):
 def register_extensions(application):
     db.init_app(application)
     create_data(application, db)
-    # api = Api(application)
+    load_data_from_json('/Users/rafaelsirinan/Desktop/Python Projects/coursework_3/data_for_db.json', application, db)
+    api = Api(application)
+    api.add_namespace(movie_ns)
+    api.add_namespace(auth_ns)
     # api.add_namespace(director_ns)
     # api.add_namespace(genre_ns)
-    # api.add_namespace(movie_ns)
     # api.add_namespace(user_ns)
-    # api.add_namespace(auth_ns)
-
-
-# class User(db.Model):
-#     __tablename__ = 'user'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     email = db.Column(db.String(100), unique=True, nullable=False)
-#     password = db.Column(db.String(100), nullable=False)
-#     name = db.Column(db.String(50))
-#     surname = db.Column(db.String(50))
-#     favorite_genre = db.Column(db.String(50))
 
 
 def create_data(application, database):
@@ -55,6 +45,44 @@ def create_data(application, database):
 
         with database.session.begin():
             database.session.add_all([u1, u2, u3])
+
+
+def load_data_from_json(json_file_path, application, database):
+    with application.app_context():
+        database.drop_all()
+        database.create_all()
+
+        with open(json_file_path, 'r') as json_file:
+            data = json.load(json_file)
+            for item in data["movies"]:
+                movie = Movie(
+                    id=item['pk'],
+                    title=item['title'],
+                    description=item['description'],
+                    trailer=item['trailer'],
+                    year=item['year'],
+                    rating=item['rating'],
+                    genre_id=item['genre_id'],
+                    director_id=item['director_id']
+                )
+                database.session.add(movie)
+            database.session.commit()
+
+            for item in data["directors"]:
+                director = Director(
+                    id=item['pk'],
+                    name=item['name']
+                )
+                database.session.add(director)
+            database.session.commit()
+
+            for item in data["genres"]:
+                genre = Genre(
+                    id=item['pk'],
+                    name=item['name']
+                )
+                database.session.add(genre)
+            database.session.commit()
 
 
 app = create_app(Config())

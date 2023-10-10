@@ -1,14 +1,13 @@
 from marshmallow import Schema, fields
-from sqlalchemy import Column, String, Integer
 
-from project.setup_db import db
+from setup_db import db
 
 
 class Genre(db.Model):
-    __tablename__ = 'genres'
+    __tablename__ = 'genre'
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(100), unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
 
 
 class GenreSchema(Schema):
