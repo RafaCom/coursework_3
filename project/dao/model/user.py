@@ -1,6 +1,8 @@
 from marshmallow import Schema, fields
 
-from setup_db import db
+from project.db.setup_db import db
+
+from project.dao.model.genre import Genre
 
 
 class User(db.Model):
@@ -12,7 +14,10 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(50))
     surname = db.Column(db.String(50))
-    favorite_genre = db.Column(db.String(50))
+    favorite_genre_id = db.Column(db.Integer, db.ForeignKey(Genre.id))
+    favorite_genre = db.relationship('Genre')
+
+    # movies = db.relationship('UserMovieAssociation', back_populates='user')
 
 
 class UserSchema(Schema):
@@ -21,7 +26,7 @@ class UserSchema(Schema):
     password = fields.Str()
     name = fields.Str()
     surname = fields.Str()
-    favorite_genre = fields.Str()
+    favorite_genre_id = fields.Int()
 
 
 # with app.app_context():

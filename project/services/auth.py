@@ -57,6 +57,7 @@ class AuthService:
     def auth_required(self, func):
         def wrapper(*args, **kwargs):
             if "Authorization" not in request.headers:
+                print('тут')
                 abort(401)
 
             data = request.headers["Authorization"]
@@ -65,6 +66,7 @@ class AuthService:
                 jwt.decode(token, Config.JWT_SECRET, algorithms=Config.ALGO)
                 # print(jwt.decode(token, Config.JWT_SECRET, algorithms=Config.ALGO))
             except Exception as e:
+                print('тут')
                 print(e)
                 abort(401)
             return func(*args, **kwargs)

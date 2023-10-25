@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from setup_db import db
+from project.db.setup_db import db
 
 from project.dao.model.director import Director
 from project.dao.model.genre import Genre
@@ -8,6 +8,7 @@ from project.dao.model.genre import Genre
 
 class Movie(db.Model):
     __tablename__ = 'movie'
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(100), nullable=False)
@@ -19,6 +20,8 @@ class Movie(db.Model):
     genre = db.relationship("Genre")
     director_id = db.Column(db.Integer, db.ForeignKey(Director.id), nullable=False)
     director = db.relationship("Director")
+
+    # users = db.relationship('UserMovieAssociation', back_populates='movie')
 
 
 class MovieSchema(Schema):

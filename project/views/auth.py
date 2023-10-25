@@ -3,10 +3,10 @@ from flask_restx import Namespace, Resource
 
 from project.implemented import user_service, auth_service
 
-auth_ns = Namespace('auth')
+auth_ns = Namespace("/auth")
 
 
-@auth_ns.route('/register')
+@auth_ns.route('/register/')
 class AuthRegisterView(Resource):
     def post(self):
         req_json = request.json
@@ -17,13 +17,12 @@ class AuthRegisterView(Resource):
         if None is [email, password]:
             return "", 400
 
-        user_service.create(req_json)
+        user_service.create(req_json), 201
 
 
-@auth_ns.route('/login')
+@auth_ns.route('/login/')
 class AuthLoginView(Resource):
     def post(self):
-        """ ТУТ ВОЗНИКАЕТ ОШИБКА, КОГДА ХОЧУ ПОЛУЧИТЬ ТОКЕНЫ """
         req_json = request.json
 
         email = req_json.get('email', None)

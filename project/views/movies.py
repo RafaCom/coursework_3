@@ -28,10 +28,13 @@ class MoviesView(Resource):
         return "", 201, {"location": f"/movies/{movie.id}"}
 
 
-@movie_ns.route('/<int:mid>')
+@movie_ns.route('/<int:mid>/')
 class MovieView(Resource):
     def get(self, mid):
-        return movie_service.get_one(mid)
+        movie = movie_service.get_one(mid)
+        res = MovieSchema().dump(movie)  # проблема чтения id в frontend
+        print(res)
+        return res, 200
 
     def put(self, mid):
         req_json = request.json
